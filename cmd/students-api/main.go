@@ -1,8 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/thenaveensharma/students-api/internal/config"
+)
 
 func main() {
-
-	fmt.Println("Package initialized")
+	//load config
+	cfg := config.MustLoad()
+	fmt.Println(cfg)
 }
