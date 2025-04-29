@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"log"
 	"log/slog"
 	"net/http"
 	"os"
@@ -11,12 +12,20 @@ import (
 
 	"github.com/thenaveensharma/students-api/internal/config"
 	"github.com/thenaveensharma/students-api/internal/http/handlers/students"
+	"github.com/thenaveensharma/students-api/internal/storage/sqlite"
 )
 
 func main() {
 	//load config
 	cfg := config.MustLoad()
 
+	//databse initialize
+	_, err := sqlite.New(cfg)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	slog.Info("storage initialized", slog.String("env", cfg.Env))
 	//server
 
 	router := http.NewServeMux()
