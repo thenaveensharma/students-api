@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/thenaveensharma/students-api/internal/config"
-	"github.com/thenaveensharma/students-api/internal/http/handlers/students"
+	"github.com/thenaveensharma/students-api/internal/http/handlers/student"
 	"github.com/thenaveensharma/students-api/internal/storage/sqlite"
 )
 
@@ -29,7 +29,8 @@ func main() {
 	//server
 
 	router := http.NewServeMux()
-	router.HandleFunc("POST /api/students", students.New(storage))
+	router.HandleFunc("POST /api/students", student.New(storage))
+	router.HandleFunc("GET /api/students/{id}", student.GetById(storage))
 
 	server := http.Server{
 		Addr:    cfg.Address,
