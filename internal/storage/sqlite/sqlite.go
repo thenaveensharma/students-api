@@ -91,7 +91,7 @@ func (s *Sqlite) GetAllStudents() ([]types.Student, error) {
 	}
 	defer stmt.Close()
 
-	var students []types.Student
+	students := make([]types.Student, 0)
 
 	rows, err := stmt.Query()
 
