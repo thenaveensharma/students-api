@@ -3,6 +3,7 @@ package sqlite
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/thenaveensharma/students-api/internal/config"
@@ -19,6 +20,12 @@ func New(cfg *config.Config) (*Sqlite, error) {
 	if err != nil {
 		return nil, err
 	}
+	pingErr := db.Ping()
+	if pingErr != nil {
+		log.Fatal(pingErr)
+	}
+
+	fmt.Println("Connected!")
 
 	result, err := db.Exec(`
 	CREATE TABLE IF NOT EXISTS students 
@@ -75,4 +82,33 @@ func (s *Sqlite) GetStudentById(id int64) (types.Student, error) {
 	}
 
 	return student, nil
+}
+
+func (s *Sqlite) GetAllStudents() ([]types.Student, error) {
+	stmt, err := s.Db.Prepare(`SELECT id, name, email, age FROM students`)
+	if err != nil {
+		return []types.Student{}, err
+	}
+	defer stmt.Close()
+
+	var students []types.Student
+
+	rows, err := stmt.Query()
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return []types.Student{}, nil
+		}
+		return []types.Student{}, fmt.Errorf("query error: %w", err)
+	}
+
+	for rows.Next() {
+		var student types.Student
+		if err := rows.Scan(&student.Id, &student.Name, &student.Email, &student.Age); err != nil {
+			return nil, err
+		}
+		students = append(students, student)
+	}
+
+	return students, nil
 }
