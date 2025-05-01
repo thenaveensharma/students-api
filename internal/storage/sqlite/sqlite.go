@@ -101,7 +101,7 @@ func (s *Sqlite) GetAllStudents() ([]types.Student, error) {
 		}
 		return []types.Student{}, fmt.Errorf("query error: %w", err)
 	}
-
+	defer rows.Close()
 	for rows.Next() {
 		var student types.Student
 		if err := rows.Scan(&student.Id, &student.Name, &student.Email, &student.Age); err != nil {
